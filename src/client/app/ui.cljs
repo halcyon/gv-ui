@@ -72,7 +72,6 @@
   Object
   (render [this]
           (let [ps (om/props this)]
-            (js/console.log "rendering DataPoint")
             (dom/li nil (pr-str ps)))))
 (def ui-data-point (om/factory DataPoint {:keyfn :id}))
 
@@ -93,8 +92,6 @@
   Object
   (render [this]
           (let [{:keys [id points]} (om/props this)]
-            (js/console.log "rendering DataSeries...")
-            (js/console.log "DataSeries points: " points)
             (dom/ol nil (str "data series " id ": ")
                     (map ui-data-point points)))))
 (def ui-data-series (om/factory DataSeries {:keyfn :id}))
@@ -109,8 +106,6 @@
   Object
   (render [this]
           (let [{:keys [id series]} (om/props this)]
-            (js/console.log "rendering DataViz...")
-            (js/console.log "DataViz props: " (om/props this))
             (dom/div nil
                      (dom/b nil (str "DataViz " id ": "))
                      (map ui-data-series series)))))
@@ -129,8 +124,6 @@
   Object
   (render [this]
           (let [{:keys [widgets]} (om/props this)]
-            (js/console.log "rendering DataTab...")
-            (js/console.log "DataTab widgets: " widgets)
             (dom/div nil
                      (dom/b nil "DataTab")
                      (map ui-data-viz widgets)))))
