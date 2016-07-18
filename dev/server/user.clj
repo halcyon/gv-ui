@@ -8,10 +8,21 @@
     [app.system :as sys]))
 
 ;;FIGWHEEL
+(def cljsbuild (->> "project.clj"
+                    slurp
+                    read-string
+                    (drop-while #(not= % :cljsbuild))
+                    (apply hash-map)
+                    :cljsbuild
+                    :builds))
+
 (def figwheel-config
   {:figwheel-options {:css-dirs ["resources/public/css"]}
    :build-ids        ["dev"]
-   :all-builds       (figwheel-sidecar.repl/get-project-cljs-builds)})
+   :all-builds       cljsbuild ;; (figwheel-sidecar.repl/get-project-cljs-builds)
+   })
+
+
 
 (defn start-figwheel
   "Start Figwheel on the given builds, or defaults to build-ids in `figwheel-config`."
