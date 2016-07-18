@@ -22,3 +22,12 @@
                               (-> s
                                   (assoc-in [:lists/by-title "Initial List" :items] idents)
                                   (dissoc :all-items))))))})
+
+
+(defmethod m/mutate 'app/choose-tab [{:as env
+                                      :keys [state ;; app-state atom
+                                             ref]} ;; ident of component on which mutation is run
+
+                                     dispatch-key ;; 'app/choose-tab
+                                     {:keys [tab] :as params}]
+  {:action (fn [] (swap! state assoc-in [:tabs 0] tab))})
