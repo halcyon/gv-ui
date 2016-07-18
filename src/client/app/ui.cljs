@@ -46,14 +46,107 @@
 
 (def ui-list (om/factory MyList))
 
-(defui ^:once Root
+(defui ^:once TodoTab
   static uc/InitialAppState
-  (initial-state [clz params] {:list (uc/initial-state MyList {})})
+  (intiial-state [clz params] {:id 1 :type :todo-tab (uc/initial-state MyList {})})
   static om/IQuery
-  (query [this] [:ui/react-key :ui/loading-data {:list (om/get-query MyList)}])
+  (query [this] [:id :type :data])
   Object
   (render [this]
-    (let [{:keys [react-key ui/loading-data list]} (om/props this)]
-      (dom/div #js {:key react-key}
-        (dom/h4 nil "Header" (when loading-data " (LOADING)"))
-        (ui-list list)))))
+          (let [{:keys [data]} (om/props this)]
+            (dom/b nil (str "data: " (pr-str data))))))
+(def ui-todo-page (om/factory TodoTab {:keyfn :id}))
+
+
+(defui ^:once DataPoint
+  static om/Ident
+  (ident [this {:keys [id] :as props}] [:point/by-id id])
+  static om/IQuery
+  (query [this] [:id :x :y :t])
+  Object
+  (render [this]
+          (let [ps (om/props this)]
+            (dom/li nil (str "DataPoint props: " (pr-str ps))))))
+(def ui-data-point (om/factory DataPoint {:keyfn :id}))
+
+(defui ^:once DataSeries
+  static uc/InitialAppState
+  (initial-state [clz params]
+                 {:id 1 :points [{:id 0 :t 0 :x 0 :y 0}
+                                 {:id 1 :t 1 :x 1 :y 1}
+                                 {:id 2 :t 2 :x 1 :y 2}
+                                 {:id 3 :t 3 :x 2 :y 3}
+                                 {:id 4 :t 4 :x 2 :y 3}
+                                 {:id 5 :t 5 :x 3 :y 5}]})
+  static om/Ident
+  (ident [this {:key [id] :as props}] [:series/by-id id])
+  static om/IQuery
+  (query [this] [:id {:points (om/get-query DataPoint)}])
+  Object
+  (render [this]
+          (let [{:keys [id points]} (om/props this)]
+            (dom/ol nil (str "data series " id ": ")
+                    (map ui-data-point points)))))
+(def ui-data-series (om/factory DataSeries {:keyfn :id}))
+
+(defui ^:once DataViz
+  static uc/InitialAppState
+  (intiial-state [clz params] {:id 1 :series (uc/initial-state DataSeries {})})
+  static om/Ident
+  (ident [this props] [:viz/by-id id])
+  static om/IQuery
+  (query [this] [:id {:series (om/get-query DataSeries)}])
+  Object
+  (render [this]
+          (let [{:keys [id series]} (om/props this)]
+            (dom/div nil
+                     (dom/b nil (str "DataViz " id ": "))
+                     (map ui-data-series series)))))
+
+(def ui-data-visualization (om/factory DataViz))
+
+(defui ^:once DataTab
+  static uc/InitialAppState
+  (intiial-state [clz params] {:id 1
+                               :type :data-tab
+                               :widgets [(uc/initial-state DataViz {})]})
+  static om/IQuery
+  (query [this] [:id :type {:widgets (om/get-query DataViz)}])
+  Object
+  (render [this]
+          (let [{:keys [widgets]} (om/props this)]
+            (dom/div nil
+                     (dom/b nil "DataTab")
+                     (map ui-data-visualization widgets)))))
+(def ui-data-tab (om/factory DataTab {:keyfn :id}))
+
+(defui ^:once TabManager
+  static uc/InitialAppState
+  (intiial-state [clz params] (uc/initial-state TodoTab {}))
+  static om/Ident
+  (ident [this {:keys [type id] :as props}] [type id])
+  static om/IQuery
+  (query [this] {:todo-tab (om/get-query TodoTab)
+                 :data-tab (om/get-query DataTab)})
+  Object
+  (render [this]
+          (let [props (om/props this)]
+            (case (:type props)
+              :todo-tab (ui-todo-tab props)
+              :data-tab (ui-data-tab props)
+              (dom/b nil "NO TAB")))))
+
+(def ui-tabs (om/factory TabManager))
+
+(defui ^:once Root
+  static uc/InitialAppState
+  (initial-state [clz params] {:ui/react-key "start"
+                               :tabs         (uc/initial-state TabManager {})})
+  static om/IQuery
+  (query [this] [:ui/react-key :ui/loading-data {:tabs (om/get-query TabManager)}])
+  Object
+  (render [this]
+          (let [{:keys [react-key ui/loading-data tabs]} (om/props this)]
+            (dom/div #js {:key react-key}
+                     (dom/h4 nil "Header" (when loading-data " (LOADING)"))
+                     (ui-tabs tabs)))))
