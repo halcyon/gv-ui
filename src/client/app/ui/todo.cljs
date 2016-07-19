@@ -62,4 +62,4 @@
             (dom/div nil
                      (dom/b nil (str "TodoTab lists: " (pr-str lists)))
                      (map ui-list lists)))))
-(def ui-tab (om/factory TodoTab {:keyfn :id}))
+(def ui-tab (om/factory TodoTab {:keyfn (juxt :type :id)}))
