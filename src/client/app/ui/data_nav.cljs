@@ -1,4 +1,4 @@
-(ns app.ui.data-viz
+(ns app.ui.data-nav
   (:require [om.dom :as dom]
             [om.next :as om :refer-macros [defui]]
             yahoo.intl-messageformat-with-locales
@@ -37,35 +37,35 @@
                     (map ui-data-point points)))))
 (def ui-data-series (om/factory DataSeries {:keyfn :id}))
 
-(defui ^:once DataViz
+(defui ^:once DataNav
   static uc/InitialAppState
   (initial-state [clz params] {:id 1 :series [(uc/initial-state DataSeries {})]})
   static om/Ident
-  (ident [this {id :id :as props}] [:viz/by-id id])
+  (ident [this {id :id :as props}] [:nav/by-id id])
   static om/IQuery
   (query [this] [:id {:series (om/get-query DataSeries)}])
   Object
   (render [this]
           (let [{:keys [id series]} (om/props this)]
             (dom/div nil
-                     (dom/b nil (str "DataViz " id ": "))
+                     (dom/b nil (str "DataNav " id ": "))
                      (map ui-data-series series)))))
 
-(def ui-data-viz (om/factory DataViz {:keyfn :id}))
+(def ui-data-nav (om/factory DataNav {:keyfn :id}))
 
 (defui ^:once DataTab
   static uc/InitialAppState
   (initial-state [clz params] {:id 1
                                :type :data-tab
-                               :widgets [(uc/initial-state DataViz {})]})
+                               :widgets [(uc/initial-state DataNav {})]})
   static om/Ident
   (ident [this {id :id :as props}] [:data-tab id])
   static om/IQuery
-  (query [this] [:id :type {:widgets (om/get-query DataViz)}])
+  (query [this] [:id :type {:widgets (om/get-query DataNav)}])
   Object
   (render [this]
           (let [{:keys [widgets]} (om/props this)]
             (dom/div nil
                      (dom/b nil "DataTab")
-                     (map ui-data-viz widgets)))))
-(def ui-tab (om/factory DataTab {:keyfn :id}))
+                     (map ui-data-nav widgets)))))
+(def ui-tab (om/factory DataTab {:keyfn (juxt :type :id)}))
