@@ -1,6 +1,7 @@
 (ns app.ui
   (:require [app.ui.todo :as todo :refer [TodoTab]]
             [app.ui.data-viz :as data-viz :refer [DataTab]]
+            cljsjs.d3
             [om.dom :as dom]
             [om.next :as om :refer-macros [defui]]
             yahoo.intl-messageformat-with-locales

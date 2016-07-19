@@ -12,7 +12,8 @@
                  [navis/untangled-spec "0.3.8"]
                  [com.taoensso/timbre "4.6.0"]
                  [commons-codec "1.10"]
-                 [binaryage/devtools "0.7.2" :scope "test"]]
+                 [binaryage/devtools "0.7.2" :scope "test"]
+                 [cljsjs/d3 "4.0.0-0"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]]
 
