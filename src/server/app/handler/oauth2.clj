@@ -16,7 +16,7 @@
    :access-token-uri "https://www.googleapis.com/oauth2/v4/token"
    :scope "profile https://www.googleapis.com/auth/contacts"})
 
-(def auth-db (atom {}))
+(defonce auth-db (atom {}))
 
 (defn auth
   [env match]
@@ -36,21 +36,46 @@
     (swap! auth-db assoc :csrf csrf)
     (ring/redirect uri)))
 
+(defn grant
+  [code]
+  {:authorization {:grant_type "authorization_code"
+                   :code code}
+   :refresh {:grant_type "refresh_token"
+             :refresh_token code}})
 
 (defn request-grant
-  [authorization-code]
+  [grant]
   (try
     (-> oauth2-params
         :access-token-uri
         (http/post
-         {:form-params {:code         authorization-code
-                        :grant_type   "authorization_code"
-                        :client_id    (:client-id oauth2-params)
-                        :redirect_uri (:redirect-uri oauth2-params)}
-          :basic-auth  [(:client-id oauth2-params) (:client-secret oauth2-params)]})
+         {:form-params (merge {:client_id (:client-id oauth2-params)
+                               :redirect_uri (:redirect-uri oauth2-params)}
+                              grant)
+          :basic-auth [(:client-id oauth2-params)
+                       (:client-secret oauth2-params)]})
         :body
         (json/parse-string true))
     (catch Exception _ nil)))
+
+(defprotocol IOauth2
+  (authorize [this code])
+  (refresh [this]))
+
+(def authorize-protected
+  (reify IOauth2
+    (authorize [_ code]
+      (-> code
+          grant
+          :authorization
+          request-grant))
+    (refresh [_]
+      (->> @auth-db
+           :refresh_token
+           grant
+           :refresh
+           request-grant
+           (swap! auth-db merge)))))
 
 (defn redirect
   [request]
@@ -62,7 +87,7 @@
 
     (if (= csrf (:csrf @auth-db))
       (do
-        (swap! auth-db merge (request-grant code))
+        (swap! auth-db merge (authorize authorize-protected code))
         (ring/content-type (ring/response (:access_token @auth-db)) "text/html"))
       (ring/content-type (ring/response (str "CSRF attempt detected "
                                              "request " request
@@ -72,12 +97,24 @@
 
 (defn redirect-handler
   [env match]
-  ((wrap-params (wrap-keyword-params redirect))  (:request env)))
+  ((wrap-params (wrap-keyword-params redirect))
+   (:request env)))
+
+(defmacro try-protected
+  [& body]
+  `(try
+     ~@body
+     (catch Exception e#
+       (when (= 401 (:status (ex-data e#)))
+         (refresh authorize-protected)
+         ~@body))))
 
 (defn contacts
   [env match]
-  (let [contacts-resp (http/get "https://www.google.com/m8/feeds/contacts/default/full"
-                                {:headers
-                                 {:authorization (str "Bearer " (:access_token @auth-db))}})
+  (let [contacts-resp
+        (try-protected (http/get "https://www.google.com/m8/feeds/contacts/default/full"
+                                 {:headers
+                                  {:authorization (str "Bearer " (:access_token @auth-db))}}))
+
         contacts-xml (xml/parse-str (:body contacts-resp))]
     (ring/content-type (ring/response contacts-xml) "text/html")))
