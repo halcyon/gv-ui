@@ -3,6 +3,7 @@
     [untangled.server.core :as core]
     [app.api :as api]
     [app.handler.demo :as demo]
+    [app.handler.oauth2 :as oauth2]
     [om.next.server :as om]
     [taoensso.timbre :as timbre]
     [com.stuartsierra.component :as c]
@@ -23,11 +24,18 @@
                   :next-id (atom 1)))
   (stop [this] this))
 
-(defn make-system []
+(defn make-system
+  []
   (core/make-untangled-server
     :config-path "config/demo.edn"
     :parser (om/parser {:read logging-query :mutate logging-mutate})
     :parser-injections #{:db}
     :components {:db (map->Database {})}
-    :extra-routes {:routes ["/" {"demo" {:get :demo}}]
-                   :handlers {:demo demo/handler}}))
+    :extra-routes {:routes   ["/" {"demo"   {:get :demo}
+                                   "oauth2" {:get {"/auth"     :oauth2-auth
+                                                   "/redirect" :oauth2-access
+                                                   "/contacts" :contacts}}}]
+                   :handlers {:demo          demo/handler
+                              :oauth2-auth   oauth2/auth
+                              :oauth2-access oauth2/redirect-handler
+                              :contacts      oauth2/contacts}}))
