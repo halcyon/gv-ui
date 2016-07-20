@@ -16,7 +16,7 @@
    :access-token-uri "https://www.googleapis.com/oauth2/v4/token"
    :scope "profile https://www.googleapis.com/auth/contacts"})
 
-(def auth-db (atom {}))
+(defonce auth-db (atom {}))
 
 (defn auth
   [env match]
@@ -49,13 +49,25 @@
     (-> oauth2-params
         :access-token-uri
         (http/post
-         {:form-params (merge {:client_id    (:client-id oauth2-params)
+         {:form-params (merge {:client_id (:client-id oauth2-params)
                                :redirect_uri (:redirect-uri oauth2-params)}
                               grant)
-          :basic-auth  [(:client-id oauth2-params) (:client-secret oauth2-params)]})
+          :basic-auth [(:client-id oauth2-params)
+                       (:client-secret oauth2-params)]})
         :body
         (json/parse-string true))
     (catch Exception _ nil)))
+
+(defprotocol IOauth2
+  (authorize [this code])
+  (refresh [this]))
+
+(def authorize-protected
+  (reify IOauth2
+    (authorize [this code]
+      (request-grant (:authorization (grant code))))
+    (refresh [this]
+      (request-grant (:refresh (grant (:refresh_token @auth-db)))))))
 
 (defn redirect
   [request]
@@ -67,7 +79,7 @@
 
     (if (= csrf (:csrf @auth-db))
       (do
-        (swap! auth-db merge (request-grant (:authorization (grant code))))
+        (swap! auth-db merge (authorize authorize-protected code))
         (ring/content-type (ring/response (:access_token @auth-db)) "text/html"))
       (ring/content-type (ring/response (str "CSRF attempt detected "
                                              "request " request
@@ -77,7 +89,8 @@
 
 (defn redirect-handler
   [env match]
-  ((wrap-params (wrap-keyword-params redirect))  (:request env)))
+  ((wrap-params (wrap-keyword-params redirect))
+   (:request env)))
 
 (defn contacts
   [env match]
