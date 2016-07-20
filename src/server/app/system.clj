@@ -32,10 +32,12 @@
     :parser-injections #{:db}
     :components {:db (map->Database {})}
     :extra-routes {:routes   ["/" {"demo"   {:get :demo}
+                                   "exec"   {:get :exec}
                                    "oauth2" {:get {"/auth"     :oauth2-auth
                                                    "/redirect" :oauth2-access
                                                    "/contacts" :contacts}}}]
                    :handlers {:demo          demo/handler
+                              :exec          demo/exec-demo
                               :oauth2-auth   oauth2/auth
                               :oauth2-access oauth2/redirect-handler
                               :contacts      oauth2/contacts}}))
