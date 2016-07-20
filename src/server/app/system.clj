@@ -2,6 +2,7 @@
   (:require
     [untangled.server.core :as core]
     [app.api :as api]
+    [app.handler.demo :as demo]
     [om.next.server :as om]
     [taoensso.timbre :as timbre]
     [com.stuartsierra.component :as c]
@@ -27,4 +28,6 @@
     :config-path "config/demo.edn"
     :parser (om/parser {:read logging-query :mutate logging-mutate})
     :parser-injections #{:db}
-    :components {:db (map->Database {})}))
+    :components {:db (map->Database {})}
+    :extra-routes {:routes ["/" {"demo" {:get :demo}}]
+                   :handlers {:demo demo/handler}}))
