@@ -36,17 +36,22 @@
     (swap! auth-db assoc :csrf csrf)
     (ring/redirect uri)))
 
+(defn grant
+  [code]
+  {:authorization {:grant_type "authorization_code"
+                   :code code}
+   :refresh {:grant_type "refresh_token"
+             :refresh_token code}})
 
 (defn request-grant
-  [authorization-code]
+  [grant]
   (try
     (-> oauth2-params
         :access-token-uri
         (http/post
-         {:form-params {:code         authorization-code
-                        :grant_type   "authorization_code"
-                        :client_id    (:client-id oauth2-params)
-                        :redirect_uri (:redirect-uri oauth2-params)}
+         {:form-params (merge {:client_id    (:client-id oauth2-params)
+                               :redirect_uri (:redirect-uri oauth2-params)}
+                              grant)
           :basic-auth  [(:client-id oauth2-params) (:client-secret oauth2-params)]})
         :body
         (json/parse-string true))
@@ -62,7 +67,7 @@
 
     (if (= csrf (:csrf @auth-db))
       (do
-        (swap! auth-db merge (request-grant code))
+        (swap! auth-db merge (request-grant (:authorization (grant code))))
         (ring/content-type (ring/response (:access_token @auth-db)) "text/html"))
       (ring/content-type (ring/response (str "CSRF attempt detected "
                                              "request " request
