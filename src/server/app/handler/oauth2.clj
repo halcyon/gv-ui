@@ -1,10 +1,12 @@
 (ns app.handler.oauth2
-  (:require [cemerick.url :refer [query->map url-encode]]
+  (:require [cemerick.url :refer [url-encode]]
             [cheshire.core :as json]
             [ring.util.response :as ring]
             [taoensso.timbre :as timbre]
             [clj-http.client :as http]
-            [clojure.data.xml :as xml]))
+            [clojure.data.xml :as xml]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]))
 
 (def oauth2-params
   {:client-id (System/getenv "GOOGLE_CLIENT_ID")
@@ -51,13 +53,10 @@
     (catch Exception _ nil)))
 
 (defn redirect
-  [env match]
-  (let [{:keys [db request]} env
-        query-string (clojure.walk/keywordize-keys (query->map (:query-string request)))
+  [request]
+  (let [query-string (:params request)
         csrf (:state query-string)
         code (:code query-string)]
-    (timbre/info "env:" env)
-    (timbre/info "match:" match)
     (timbre/info "query-string:" query-string)
     (timbre/info "csrf-atom:" (:csrf @auth-db))
 
@@ -66,9 +65,14 @@
         (swap! auth-db merge (request-grant code))
         (ring/content-type (ring/response (:access_token @auth-db)) "text/html"))
       (ring/content-type (ring/response (str "CSRF attempt detected "
+                                             "request " request
                                              "token: " csrf " "
                                              "atom:  " (:csrf @auth-db)))
                          "text/html"))))
+
+(defn redirect-handler
+  [env match]
+  ((wrap-params (wrap-keyword-params redirect))  (:request env)))
 
 (defn contacts
   [env match]

@@ -6,8 +6,7 @@
     [om.next.server :as om]
     [taoensso.timbre :as timbre]
     [com.stuartsierra.component :as c]
-    [om.next.impl.parser :as op]
-    [ring.middleware.params :refer [wrap-params]]))
+    [om.next.impl.parser :as op]))
 
 (defn logging-mutate [env k params]
   (timbre/info "Mutation Request: " k)
@@ -32,7 +31,7 @@
                                                  "/redirect" :oauth2-access
                                                  "/contacts" :contacts}}}]
                    :handlers {:oauth2-auth oauth2/auth
-                              :oauth2-access oauth2/redirect
+                              :oauth2-access oauth2/redirect-handler
                               :contacts oauth2/contacts}}
     :parser (om/parser {:read logging-query :mutate logging-mutate})
     :parser-injections #{:db}
