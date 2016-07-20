@@ -60,7 +60,7 @@
                                  (let [path* (str/split path-str #"-")
                                        path (cond-> path* (< (count path*) 5) (conj "end"))
                                        pages (into #{} path)
-                                       ignore #{"lead_"}
+                                       ignore #{"lead_"} ;; two rows contain this enigmatic term
                                        rename {"phone lead" "phone_lead"
                                                "email lead" "email_lead"
                                                "social login" "social_login"
@@ -69,3 +69,31 @@
                                      (let [renamed-path (apply str (interpose \- (map #(get rename % %) path)))]
                                        [renamed-path visits])))))))
                          csv-seq))))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+
+;;
+[["pdp" 5866]
+ ["srp" 4018]
+ ["media" 1719]
+ ["home" 1552]
+ ["generic" 1535]
+ ["phone_lead" 1503]
+ ["floorplans" 1223]
+ ["lead_floor_plans" 1185]
+ ["end" 1021]
+ ["email_lead" 907]
+ ["lead_contact_property_bottom" 381]
+ ["lead_property_listings" 258]
+ ["lead_media_div" 184]
+ ["lead_thank_you_page" 83]
+ ["login" 78]
+ ["lead_spotlight" 61]
+ ["social_login" 18]
+ ["register" 9]
+ ["lead_nearby_properties" 1]
+ ["Path" 1]
+ ["lead_property_overview" 1]]
