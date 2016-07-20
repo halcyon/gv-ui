@@ -11,9 +11,9 @@
 (def oauth2-params
   {:client-id (System/getenv "GOOGLE_CLIENT_ID")
    :client-secret (System/getenv "GOOGLE_CLIENT_SECRET")
-   :authorize-uri "https://accounts.google.com/o/oauth2/auth"
+   :authorize-uri "https://accounts.google.com/o/oauth2/v2/auth"
    :redirect-uri "http://127.0.0.1:8080/oauth2/redirect"
-   :access-token-uri "https://accounts.google.com/o/oauth2/token"
+   :access-token-uri "https://www.googleapis.com/oauth2/v4/token"
    :scope "profile https://www.googleapis.com/auth/contacts"})
 
 (def auth-db (atom {}))
