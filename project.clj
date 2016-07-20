@@ -17,7 +17,8 @@
                  [com.cemerick/url "0.1.1"]
                  [clj-http "3.1.0"]
                  [cheshire "5.6.3"]
-                 [org.clojure/data.xml "0.0.8"]]
+                 [org.clojure/data.xml "0.0.8"]
+                 [org.clojure/data.csv "0.1.3"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]]
 
