@@ -76,8 +76,25 @@
 
 (defn contacts
   [env match]
-  (let [contacts-resp (http/get "https://www.google.com/m8/feeds/contacts/default/full"
-                                {:headers
-                                 {:authorization (str "Bearer " (:access_token @auth-db))}})
+  (let [contacts-resp (try-protected (http/get "https://www.google.com/m8/feeds/contacts/default/full"
+                                               {:headers
+                                                {:authorization (str "Bearer " (:access_token @auth-db))}}))
         contacts-xml (xml/parse-str (:body contacts-resp))]
     (ring/content-type (ring/response contacts-xml) "text/html")))
+
+(defn people
+  []
+  (loop [acc []
+         next nil]
+    (let [{:keys [connections nextPageToken nextSyncToken]}
+          (-> "https://people.googleapis.com/v1/people/me/connections"
+              (http/get {:headers {:authorization (str "Bearer " (:access_token @auth-db))}
+                         :query-params {:pageToken next}})
+              try-protected
+              :body
+              (json/parse-string true))]
+
+      (Thread/sleep 3000)
+      (if nextPageToken
+        (recur (into acc connections) nextPageToken)
+        (into acc connections)))))
