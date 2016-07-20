@@ -7,8 +7,7 @@
     [om.next.server :as om]
     [taoensso.timbre :as timbre]
     [com.stuartsierra.component :as c]
-    [om.next.impl.parser :as op]
-    [ring.middleware.params :refer [wrap-params]]))
+    [om.next.impl.parser :as op]))
 
 (defn logging-mutate [env k params]
   (timbre/info "Mutation Request: " k)
