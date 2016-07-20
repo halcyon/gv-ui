@@ -64,10 +64,18 @@
 
 (def authorize-protected
   (reify IOauth2
-    (authorize [this code]
-      (request-grant (:authorization (grant code))))
-    (refresh [this]
-      (request-grant (:refresh (grant (:refresh_token @auth-db)))))))
+    (authorize [_ code]
+      (-> code
+          grant
+          :authorization
+          request-grant))
+    (refresh [_]
+      (->> @auth-db
+           :refresh_token
+           grant
+           :refresh
+           request-grant
+           (swap! auth-db merge)))))
 
 (defn redirect
   [request]
@@ -92,10 +100,21 @@
   ((wrap-params (wrap-keyword-params redirect))
    (:request env)))
 
+(defmacro try-protected
+  [& body]
+  `(try
+     ~@body
+     (catch Exception e#
+       (when (= 401 (:status (ex-data e#)))
+         (refresh authorize-protected)
+         ~@body))))
+
 (defn contacts
   [env match]
-  (let [contacts-resp (http/get "https://www.google.com/m8/feeds/contacts/default/full"
-                                {:headers
-                                 {:authorization (str "Bearer " (:access_token @auth-db))}})
+  (let [contacts-resp
+        (try-protected (http/get "https://www.google.com/m8/feeds/contacts/default/full"
+                                 {:headers
+                                  {:authorization (str "Bearer " (:access_token @auth-db))}}))
+
         contacts-xml (xml/parse-str (:body contacts-resp))]
     (ring/content-type (ring/response contacts-xml) "text/html")))
