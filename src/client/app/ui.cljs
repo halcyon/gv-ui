@@ -20,7 +20,6 @@
   Object
   (render [this]
           (let [props (om/props this)]
-            (js/console.log [:props props])
             (case (:type props)
               :todo-tab (todo/ui-tab props)
               :data-tab (data-nav/ui-tab props)
