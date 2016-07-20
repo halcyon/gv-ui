@@ -37,5 +37,5 @@
                                                    "/contacts" :contacts}}}]
                    :handlers {:demo          demo/handler
                               :oauth2-auth   oauth2/auth
-                              :oauth2-access oauth2/redirect
+                              :oauth2-access oauth2/redirect-handler
                               :contacts      oauth2/contacts}}))
