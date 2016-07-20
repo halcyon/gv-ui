@@ -118,3 +118,20 @@
 
         contacts-xml (xml/parse-str (:body contacts-resp))]
     (ring/content-type (ring/response contacts-xml) "text/html")))
+
+(defn people
+  []
+  (loop [acc []
+         next nil]
+    (let [{:keys [connections nextPageToken nextSyncToken]}
+          (-> "https://people.googleapis.com/v1/people/me/connections"
+              (http/get {:headers {:authorization (str "Bearer " (:access_token @auth-db))}
+                         :query-params {:pageToken next}})
+              try-protected
+              :body
+              (json/parse-string true))]
+
+      (Thread/sleep 3000)
+      (if nextPageToken
+        (recur (into acc connections) nextPageToken)
+        (into acc connections)))))
