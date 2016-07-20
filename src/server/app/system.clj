@@ -2,10 +2,12 @@
   (:require
     [untangled.server.core :as core]
     [app.api :as api]
+    [app.handler.oauth2 :as oauth2]
     [om.next.server :as om]
     [taoensso.timbre :as timbre]
     [com.stuartsierra.component :as c]
-    [om.next.impl.parser :as op]))
+    [om.next.impl.parser :as op]
+    [ring.middleware.params :refer [wrap-params]]))
 
 (defn logging-mutate [env k params]
   (timbre/info "Mutation Request: " k)
@@ -22,9 +24,16 @@
                   :next-id (atom 1)))
   (stop [this] this))
 
-(defn make-system []
+(defn make-system
+  []
   (core/make-untangled-server
     :config-path "config/demo.edn"
+    :extra-routes {:routes ["/" {"oauth2" {:get {"/auth" :oauth2-auth
+                                                 "/redirect" :oauth2-access
+                                                 "/contacts" :contacts}}}]
+                   :handlers {:oauth2-auth oauth2/auth
+                              :oauth2-access oauth2/redirect
+                              :contacts oauth2/contacts}}
     :parser (om/parser {:read logging-query :mutate logging-mutate})
     :parser-injections #{:db}
     :components {:db (map->Database {})}))
