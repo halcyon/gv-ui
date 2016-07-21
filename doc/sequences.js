@@ -29,6 +29,7 @@ var colors = {
   "lead_property_spotlight": "#E3BA22",
   "lead_nearby_properties": "#E3BA22",
   "lead_property_overview": "#E3BA22",
+  "lead_contact_property_bottom": "#E3BA22",
 };
 
 // Total size of all segments; we set this later, after loading the data.
