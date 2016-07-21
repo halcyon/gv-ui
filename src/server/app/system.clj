@@ -2,7 +2,6 @@
   (:require
     [untangled.server.core :as core]
     [app.api :as api]
-    [app.handler.demo :as demo]
     [app.handler.oauth2 :as oauth2]
     [bidi.bidi :as bidi]
     [om.next.server :as om]
@@ -32,13 +31,9 @@
     :parser (om/parser {:read logging-query :mutate logging-mutate})
     :parser-injections #{:db}
     :components {:db (map->Database {})}
-    :extra-routes {:routes   ["/" [["demo"   {:get :demo #_{"" {true :demo}}}]
-                                   ["oauth2" {:get {"/auth"     :oauth2-auth
-                                                    "/redirect" :oauth2-access
-                                                    "/contacts" :contacts}}]
-                                   [true :resource]]]
-                   :handlers {:resource      demo/resource
-                              :demo          demo/handler
-                              :oauth2-auth   oauth2/auth
+    :extra-routes {:routes   ["/" {"oauth2" {:get {"/auth"     :oauth2-auth
+                                                   "/redirect" :oauth2-access
+                                                   "/contacts" :contacts}}}]
+                   :handlers {:oauth2-auth   oauth2/auth
                               :oauth2-access oauth2/redirect-handler
                               :contacts      oauth2/contacts}}))
