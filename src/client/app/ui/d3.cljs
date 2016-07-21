@@ -55,31 +55,6 @@
       .remove)
     false))
 
-#_(defn render-arc
-  [comp props]
-  (let [svg (-> js/d3 (.select (dom/node component)))
-        data (clj->js (:squares props))
-        selection (-> svg
-                      (.selectAll "rect")
-                      (.data data (fn [d] (.-id d))))]
-    (-> (.enter selection)
-        (.append "rect")
-        (.style "fill" (fn [d] (.-color d)))
-        (.attr "x" "0")
-        (.attr "y" "0")
-        .transition
-        (.attr "x" (fn [d] (.-x d)))
-        (.attr "y" (fn [d] (.-y d)))
-        (.attr "width" (fn [d] (.-size d)))
-        (.attr "height" (fn [d] (.-size d))))
-    (-> selection
-        .exit
-        .transition
-        (.style "opacity" "0")
-        .remove)
-    false))
-
-
 (defui ^:once D3Thing
   static uc/InitialAppState
   (initial-state [clz params] {:squares [(uc/initial-state Square {})
