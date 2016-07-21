@@ -8,6 +8,7 @@ var vis;
 var partition;
 var arc;
 
+var displayName;
 
 var init = function () {
 
@@ -18,7 +19,7 @@ var init = function () {
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
  b = {
-  w: 135, h: 30, s: 3, t: 10
+  w: 140, h: 30, s: 3, t: 10
 };
 
 // Mapping of step names to colors.
@@ -45,6 +46,36 @@ var init = function () {
 	    "lead_property_overview": "#E3BA22",
 	    "lead_contact_property_bottom": "#E3BA22",
 	};
+
+
+
+
+    // step names -> DisplayName
+    displayName = {
+	"end"                          : "End",
+	"home"                         : "Home",
+	"srp"                          : "SRP",
+	"pdp"                          : "PDP",
+	"generic"                      : "Generic",
+	"phone_lead"                   : "Phone Lead",
+	"email_lead"                   : "Email Lead",
+	"media"                        : "Media",
+	"lead_media_div"               : "Lead: Media",
+	"floorplans"                   : "Floorplans",
+	"lead_floor_plans"             : "Lead: Floorplans",
+	"login"                        : "Login",
+	"register"                     : "Register",
+	"social_login"                 : "Social Login",
+	"lead_property_listings"       : "Lead: Prop. Listings",
+	"lead_property_thank_you_page" : "Lead: Thank You Page",
+	"lead_property_spotlight"      : "Lead: Spotlight",
+	"lead_nearby_properties"       : "Lead: Nearby Properties",
+	"lead_property_overview"       : "Lead: Property Overview",
+	"lead_contact_property_bottom" : "Lead: Contact Property",
+    }
+
+
+
 
 // Total size of all segments; we set this later, after loading the data.
     totalSize = 0;
@@ -233,7 +264,7 @@ function updateBreadcrumbs(nodeArray, percentageString) {
       .attr("y", b.h / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", "middle")
-      .text(function(d) { return d.name; });
+      .text(function(d) { return displayName[d.name]; });
 
   // Set position for entering and updating nodes.
   g.attr("transform", function(d, i) {
@@ -245,7 +276,7 @@ function updateBreadcrumbs(nodeArray, percentageString) {
 
   // Now move and update the percentage at the end.
   d3.select("#trail").select("#endlabel")
-      .attr("x", (nodeArray.length + 0.5) * (b.w + b.s))
+      .attr("x", (nodeArray.length + 0.25) * (b.w + b.s))
       .attr("y", b.h / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", "middle")
@@ -287,7 +318,7 @@ function drawLegend() {
       .attr("y", li.h / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", "middle")
-      .text(function(d) { return d.key; });
+      .text(function(d) { return displayName[d.key]; });
 }
 
 function toggleLegend() {

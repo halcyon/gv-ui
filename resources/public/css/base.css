@@ -1,0 +1,16 @@
+#tab-header {
+    background-color: #978f80; /* #E5E2E0; */
+}
+
+#header-title {
+    color: steel;
+    font-size: 28px;
+    text-align: center;
+    padding: 4px 0 0 0;
+}
+
+.nav-button {
+    border: none;
+    font-size: 16px;
+    background-color: #C1BAA9;
+}

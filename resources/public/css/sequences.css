@@ -19,12 +19,13 @@ body {
 }
 
 #sequence {
-  width: 600px;
-  height: 70px;
+    padding: 3px 0 0 0;
+    width: 700px;
+    height: 70px;
 }
 
 #legend {
-  padding: 10px 0 0 3px;
+  padding: 10px 0 0 25px;
 }
 
 #sequence text, #legend text {
@@ -43,7 +44,7 @@ body {
 #explanation {
   position: absolute;
   top: 260px;
-  left: 305px;
+  left: 325px;
   width: 140px;
   text-align: center;
   color: #666;

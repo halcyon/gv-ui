@@ -35,9 +35,22 @@
   (render [this]
           (let [{:keys [react-key ui/loading-data tabs]} (om/props this)]
             (dom/div #js {:key react-key}
-                     (dom/h4 nil "Header" (when loading-data " (LOADING)"))
+                     ;; navigation buttons
+                     (dom/div #js {:id "tab-header"}
+                              (dom/h2 #js {:id "header-title"}
+                                      (cond-> "Mobile-AG sequence data"
+                                        loading-data (str " (Loading data...)")))
+                              (dom/button
+                               #js {:className "nav-button"
+                                    :onClick #(om/transact!
+                                               this '[(app/choose-tab {:tab :sunburst-tab})])}
+                               "Sunburst")
+                              (dom/button
+                               #js {:className "nav-button"
+                                    :onClick #(om/transact!
+                                               this '[(app/choose-tab {:tab :data-tab})])}
+                               "Data"))
 
-                     ;; TODO - redesign buttons -> links in spans or smthn.
-                     (dom/button #js {:onClick #(om/transact! this '[(app/choose-tab {:tab :sunburst-tab})])} "Sunburst")
-                     (dom/button #js {:onClick #(om/transact! this '[(app/choose-tab {:tab :data-tab})])}     "Data")
+
+                     ;; content
                      (ui-tabs tabs)))))
