@@ -3,7 +3,7 @@ body {
   font-size: 14px;
   font-weight: 400;
   background-color: #fff;
-  width: 960px;
+  width: 1024px;
   height: 700px;
   margin-top: 10px;
 }
@@ -15,7 +15,7 @@ body {
 
 #sidebar {
   float: right;
-  width: 100px;
+  width: 225px;
 }
 
 #sequence {
