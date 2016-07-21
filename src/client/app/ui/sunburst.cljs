@@ -119,7 +119,6 @@
   (componentDidMount [this] (js/makeItSo)) ;; works only if `sequences.js` loaded prior to `app.js`
   (render [this]
           (let [{:keys [data]} (om/props this)]
-            (js/console.log "rendering SunburstTab")
             (dom/div #js {:id "sunburst-tab"}
 
                      (dom/div #js {:id "main"}
