@@ -1,64 +1,89 @@
+var width;
+var height;
+var radius;
+var b;
+var colors;
+var totalSize;
+var vis;
+var partition;
+var arc;
+
+
+var init = function () {
+
 // Dimensions of sunburst.
-var width = 790;
-var height = 600;
-var radius = Math.min(width, height) / 2;
+ width = 790;
+ height = 600;
+ radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
-var b = {
+ b = {
   w: 135, h: 30, s: 3, t: 10
 };
 
 // Mapping of step names to colors.
-var colors = {
-  "end": "#C1BAA9",
-  "home": "#5C8100",
-  "srp": "#156B90",
-  "pdp": "#0F8C79",
-  "generic": "#95A17E",
-  "phone_lead": "#F2DA57",
-  "email_lead": "#BD2D28",
-  "media": "#684664",
-  "lead_media_div": "#8E6C8A",
-  "floorplans": "#BA5F06",
-  "lead_floor_plans": "#E6842A",
-  "login": "#A0B700",
-  "register": "#A0B700",
-  "social_login": "#A0B700",
-  "lead_property_listings": "#E3BA22",
-  "lead_property_thank_you_page": "#E3BA22",
-  "lead_property_spotlight": "#E3BA22",
-  "lead_nearby_properties": "#E3BA22",
-  "lead_property_overview": "#E3BA22",
-  "lead_contact_property_bottom": "#E3BA22",
-};
+ colors =
+	{
+	    "end": "#C1BAA9",
+	    "home": "#5C8100",
+	    "srp": "#156B90",
+	    "pdp": "#0F8C79",
+	    "generic": "#95A17E",
+	    "phone_lead": "#F2DA57",
+	    "email_lead": "#BD2D28",
+	    "media": "#684664",
+	    "lead_media_div": "#8E6C8A",
+	    "floorplans": "#BA5F06",
+	    "lead_floor_plans": "#E6842A",
+	    "login": "#A0B700",
+	    "register": "#A0B700",
+	    "social_login": "#A0B700",
+	    "lead_property_listings": "#E3BA22",
+	    "lead_property_thank_you_page": "#E3BA22",
+	    "lead_property_spotlight": "#E3BA22",
+	    "lead_nearby_properties": "#E3BA22",
+	    "lead_property_overview": "#E3BA22",
+	    "lead_contact_property_bottom": "#E3BA22",
+	};
 
 // Total size of all segments; we set this later, after loading the data.
-var totalSize = 0;
+    totalSize = 0;
 
-var vis = d3.select("#chart").append("svg:svg")
+ vis = d3.select("#chart").append("svg:svg")
     .attr("width", width)
     .attr("height", height)
     .append("svg:g")
     .attr("id", "container")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-var partition = d3.layout.partition()
+ partition = d3.layout.partition()
     .size([2 * Math.PI, radius * radius])
     .value(function(d) { return d.size; });
 
-var arc = d3.svg.arc()
+ arc = d3.svg.arc()
     .startAngle(function(d) { return d.x; })
     .endAngle(function(d) { return d.x + d.dx; })
     .innerRadius(function(d) { return Math.sqrt(d.y); })
     .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
+};
 
 // Use d3.text and d3.csv.parseRows so that we do not need to have a header
 // row, and can receive the csv as an array of arrays.
-d3.text("/mdot.csv", function(text) {
-  var csv = d3.csv.parseRows(text);
-  var json = buildHierarchy(csv);
-  createVisualization(json);
-});
+// d3.text("/mdot.csv", function(text) {
+//   var csv = d3.csv.parseRows(text);
+//   var json = buildHierarchy(csv);
+//   createVisualization(json);
+// });
+
+
+function makeItSo(){
+    init();
+    d3.text("/mdot.csv", function(text) {
+	var csv = d3.csv.parseRows(text);
+	var json = buildHierarchy(csv);
+	createVisualization(json);
+    });
+};
 
 // Main function to draw and set up the visualization, once we have the data.
 function createVisualization(json) {
