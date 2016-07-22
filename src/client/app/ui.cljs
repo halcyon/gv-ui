@@ -42,14 +42,12 @@
                                         loading-data (str " (Loading data...)")))
                               (dom/button
                                #js {:className "nav-button"
-                                    :onClick #(om/transact!
-                                               this '[(app/choose-tab {:tab :sunburst-tab})])}
-                               "Sunburst")
+                                    :onClick   #(om/transact!
+                                                 this '[(app/choose-tab {:tab :sunburst-tab})])} "Sunburst")
                               (dom/button
                                #js {:className "nav-button"
-                                    :onClick #(om/transact!
-                                               this '[(app/choose-tab {:tab :data-tab})])}
-                               "Data"))
+                                    :onClick   #(om/transact!
+                                                 this '[(app/choose-tab {:tab :data-tab})])} "Data"))
 
 
                      ;; content

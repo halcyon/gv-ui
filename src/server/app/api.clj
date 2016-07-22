@@ -22,3 +22,17 @@
 
 (defmethod api-read :all-items [{:keys [db] :as env} dispatch-key params]
   {:value @(:items db)})
+
+(defmethod api-read :all-tables [{:keys [db] :as env} dispatch-key params]
+  (let [res (vals @(:tables db))]
+    ;; (timbre/info ":all-tables" res)
+    {:value (into [] (vals @(:tables db)))}))
+
+;; (in-ns 'untangled.server.impl.components.handler)
+;; (defn valid-response?
+;;   [result]
+;;   (timbre/info "valid-response? arg: " result)
+;;   (and
+;;     (not (instance? Exception result))
+;;     (not (some (fn [[_ {:keys [om.next/error]}]] (some? error)) result))))
+;; (in-ns 'app.api)

@@ -1,5 +1,8 @@
 (ns app.system
   (:require
+    [clojure.java.io :as io]
+    [clojure.data.csv :as csv]
+    [clojure.string :as str]
     [untangled.server.core :as core]
     [app.api :as api]
     [app.handler.oauth2 :as oauth2]
@@ -17,11 +20,29 @@
   (timbre/info "Query: " (op/ast->expr ast))
   (api/api-read env k params))
 
+(defn seed-db
+  [filename]
+  (with-open [in-file (io/reader filename)]
+    (let [table-id        1 ;; hardcoded for now
+          [header & rows] (csv/read-csv in-file)
+          table-rows      (into []
+                                (comp   (take 50)
+                                     (map-indexed (fn [idx [path count]]
+                                                {:id [table-id idx]
+                                                 :path (into [] (str/split path #"-"))
+                                                 :count count})))
+                                rows)]
+      {table-id {:id     table-id
+                 :header {:id [table-id 0] :cols header}
+                 :rows   table-rows}})))
+
+
 (defrecord Database [items next-id]
   c/Lifecycle
   (start [this] (assoc this
-                  :items (atom [])
-                  :next-id (atom 1)))
+                  :items   (atom [])
+                  :next-id (atom 1)
+                  :tables  (atom (seed-db "resources/public/mdot.csv"))))
   (stop [this] this))
 
 (defn make-system
