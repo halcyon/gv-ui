@@ -37,8 +37,8 @@
             (dom/div #js {:key react-key}
                      ;; navigation buttons
                      (dom/div #js {:id "tab-header"}
-                              (dom/h2 #js {:id "header-title"}
-                                      (cond-> "Mobile-AG sequence data"
+                              (dom/div #js {:id "header-title"}
+                                      (cond-> "Mobile-AG Sequence Data"
                                         loading-data (str " (Loading data...)")))
                               (dom/button
                                #js {:className "nav-button"

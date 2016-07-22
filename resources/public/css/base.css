@@ -3,14 +3,16 @@
 }
 
 #header-title {
+    height: 32px;
     color: steel;
     font-size: 28px;
     text-align: center;
-    padding: 4px 0 0 0;
+    padding: 14px 0 0 0;
 }
 
 .nav-button {
+    margin-left: 5px;
     border: none;
-    font-size: 16px;
+    font-size: 18px;
     background-color: #C1BAA9;
 }
