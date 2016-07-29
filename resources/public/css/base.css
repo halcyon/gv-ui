@@ -1,0 +1,41 @@
+#tab-header {
+    background-color: #978f80; /* #E5E2E0; */
+}
+
+#header-title {
+    height: 32px;
+    color: steel;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    padding: 14px 0 0 0;
+}
+
+.nav-button {
+    margin-left: 5px;
+    border: none;
+    font-size: 18px;
+    background-color: #C1BAA9;
+}
+
+.table-header {
+    padding: 10px 0 0 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.path-header {}
+.count-header {}
+
+.data-table {
+    border-spacing: 10px;
+}
+.table-row {
+    padding 10px 0 0 0;
+}
+.path-path {}
+.path-count{}
+
+.path-step{
+    font-size: 16px;
+}

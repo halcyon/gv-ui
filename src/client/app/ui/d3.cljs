@@ -1,12 +1,11 @@
 (ns app.ui.d3
-  (:require [om.dom :as dom]
+  (:require cljsjs.d3
+            [om.dom :as dom]
             [om.next :as om :refer-macros [defui]]
             [untangled.client.core :as uc]
             [untangled.client.mutations :as m]
             [app.ui.data-nav :refer [ui-data-series]]
-            [cljs.pprint :as pp]
-            cljsjs.d3
-            yahoo.intl-messageformat-with-locales))
+            [cljs.pprint :as pp]))
 
 
 (defn random-square
@@ -29,7 +28,7 @@
   (ident [this {id :id :as props}] [:square/by-id id])
   static om/IQuery
   (query [this] [:id :x :y :size :color]))
-(def ui-square (om/factory Square {:keyfn :id}))
+
 
 (defn render-squares
   [component props]
@@ -55,7 +54,6 @@
       .remove)
     false))
 
-
 (defui ^:once D3Thing
   static uc/InitialAppState
   (initial-state [clz params] {:squares [(uc/initial-state Square {})
@@ -79,7 +77,9 @@
 
 (defui ^:once D3Tab
   static uc/InitialAppState
-  (initial-state [clz params] {:id 1 :type :d3-tab :data {:squares []}})
+  (initial-state [clz params] {:id 1
+                               :type :d3-tab
+                               :data (uc/initial-state D3Thing {})})
   static om/Ident
   (ident [this {id :id :as props}] [:d3-tab id])
   static om/IQuery

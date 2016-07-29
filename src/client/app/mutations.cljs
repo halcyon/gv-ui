@@ -25,12 +25,14 @@
                                   (dissoc :all-items))))))})
 
 
-(defmethod m/mutate 'app/choose-tab [{:as env
-                                      :keys [state ;; app-state atom
-                                             ref]} ;; ident of component on which mutation is run
+(defmethod m/mutate 'app/choose-tab
+  [{:as env
+    :keys [state ;; app-state atom
+           ref]} ;; ident of component on which mutation is run
 
-                                     dispatch-key ;; 'app/choose-tab
-                                     {:keys [tab] :as params}]
+   dispatch-key ;; 'app/choose-tab
+   {:keys [tab] :as params}]
+
   {:action (fn [] (swap! state assoc-in [:tabs 0] tab))})
 
 
@@ -59,3 +61,12 @@
                                 (-> s
                                     (update :square/by-id dissoc id)
                                     (update-in squares-path (partial into [] (remove (comp #{id} second))))))))))})
+
+(defmethod m/mutate 'fetch/data-loaded [{:keys [state]} _ _]
+  {:action (fn []
+             (let [idents (get @state :all-tables)]
+               (swap! state
+                      (fn [s]
+                        (-> s
+                            (assoc-in [:data-tab 1 :contents] idents)
+                            (dissoc :all-tables))))))})
