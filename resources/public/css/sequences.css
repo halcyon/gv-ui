@@ -43,8 +43,12 @@ body {
 
 #explanation {
   position: absolute;
-  top: 260px;
-  left: 325px;
+  top: 345px;
+  left: 425px;
+
+
+  /* top: 260px; */
+  /* left: 325px; */
   width: 140px;
   text-align: center;
   color: #666;

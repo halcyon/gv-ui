@@ -1,7 +1,6 @@
 (ns app.ui.data-nav
   (:require [om.dom :as dom]
             [om.next :as om :refer-macros [defui]]
-            yahoo.intl-messageformat-with-locales
             [untangled.client.core :as uc]
             [untangled.client.mutations :as m]))
 
@@ -181,14 +180,14 @@
 
 (defui ^:once DataTab
   static uc/InitialAppState
-  (initial-state [clz params] {:id 1, :type :data-tab, :contents (uc/initial-state DataTable {})})
+  (initial-state [clz params] {:id 1, :type :data-tab, :content (uc/initial-state DataTable {})})
   static om/Ident
   (ident [this {id :id :as props}] [:data-tab id])
   static om/IQuery
-  (query [this] [:id :type {:contents (om/get-query DataTable)}])
+  (query [this] [:id :type {:content (om/get-query DataTable)}])
   Object
   (render [this]
-          (let [{:keys [contents]} (om/props this)]
+          (let [{:keys [content]} (om/props this)]
             (dom/div nil
-                     (map ui-table contents)))))
+                     (map ui-table content)))))
 (def ui-tab (om/factory DataTab {:keyfn (juxt :type :id)}))

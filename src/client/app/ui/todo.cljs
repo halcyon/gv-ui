@@ -1,7 +1,6 @@
 (ns app.ui.todo
   (:require [om.dom :as dom]
             [om.next :as om :refer-macros [defui]]
-            yahoo.intl-messageformat-with-locales
             [untangled.client.core :as uc]
             [untangled.client.mutations :as m]))
 
@@ -22,7 +21,7 @@
 
 (defui ^:once MyList
   static uc/InitialAppState
-  (initial-state [clz params] {:title             "Initial List"
+  (initial-state [clz params] {:title             "Next steps(?)"
                                :ui/new-item-label ""
                                :items             []})
   static om/IQuery
@@ -60,6 +59,5 @@
   (render [this]
           (let [{:keys [lists]} (om/props this)]
             (dom/div nil
-                     (dom/b nil (str "TodoTab lists: " (pr-str lists)))
                      (map ui-list lists)))))
 (def ui-tab (om/factory TodoTab {:keyfn (juxt :type :id)}))

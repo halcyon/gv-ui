@@ -13,8 +13,11 @@ var displayName;
 var init = function () {
 
 // Dimensions of sunburst.
- width = 790;
- height = 600;
+ width = 990;
+ height = 800;
+
+ // width = 790;
+ // height = 600;
  radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
@@ -40,7 +43,7 @@ var init = function () {
 	    "register": "#A0B700",
 	    "social_login": "#A0B700",
 	    "lead_property_listings": "#E3BA22",
-	    "lead_property_thank_you_page": "#E3BA22",
+    "lead_property_thank_you_page": "#E3BA22",
 	    "lead_property_spotlight": "#E3BA22",
 	    "lead_nearby_properties": "#E3BA22",
 	    "lead_property_overview": "#E3BA22",
@@ -107,11 +110,13 @@ var init = function () {
 // });
 
 
-function makeItSo(){
+function makeItSo(fname){
     init();
-    d3.text("/mdot.csv", function(text) {
+    d3.text(fname, function(text) {
 	var csv = d3.csv.parseRows(text);
 	var json = buildHierarchy(csv);
+	console.log("hierarchy: ");
+	console.log(json);
 	createVisualization(json);
     });
 };
@@ -264,7 +269,7 @@ function updateBreadcrumbs(nodeArray, percentageString) {
       .attr("y", b.h / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", "middle")
-      .text(function(d) { return displayName[d.name]; });
+      .text(function(d) { return (displayName[d.name] || d.name) });
 
   // Set position for entering and updating nodes.
   g.attr("transform", function(d, i) {

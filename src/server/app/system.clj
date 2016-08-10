@@ -20,21 +20,37 @@
   (timbre/info "Query: " (op/ast->expr ast))
   (api/api-read env k params))
 
+(let [current-table-id (atom -1)]
+  (defn new-table-id!
+    []
+    (let [res @current-table-id]
+      (swap! current-table-id inc)
+      res)))
+
 (defn seed-db
-  [filename]
-  (with-open [in-file (io/reader filename)]
-    (let [table-id        1 ;; hardcoded for now
-          [header & rows] (csv/read-csv in-file)
-          table-rows      (into []
-                                (comp   (take 50)
-                                     (map-indexed (fn [idx [path count]]
-                                                {:id [table-id idx]
-                                                 :path (into [] (str/split path #"-"))
-                                                 :count count})))
-                                rows)]
-      {table-id {:id     table-id
-                 :header {:id [table-id 0] :cols header}
-                 :rows   table-rows}})))
+  [filenames]
+  (reduce
+   (fn [acc [tag fname]]
+     (with-open [in-file (io/reader fname)]
+       (let [table-id        (new-table-id!)
+             [header & rows] (take 400 (csv/read-csv in-file))   ;; FIXME: rm `take`
+             table-rows      (into []
+                                   (map-indexed (fn [idx [path count]]
+                                                  {:id [table-id idx]
+                                                   :path (into [] (str/split path #"-"))
+                                                   :count count}))
+                                   rows)]
+         (merge-with (fn [old new]
+                       (throw (ex-info "duplicate table IDs"
+                                       {:old old :new new})))
+                     acc
+                     {table-id {:id     table-id
+                                :fname  fname
+                                :tag    tag
+                                :header {:id [table-id 0] :cols header}
+                                :rows   table-rows}}))))
+   {}
+   filenames))
 
 
 (defrecord Database [items next-id]
@@ -42,7 +58,9 @@
   (start [this] (assoc this
                   :items   (atom [])
                   :next-id (atom 1)
-                  :tables  (atom (seed-db "resources/public/mdot.csv"))))
+                  :tables  (atom (seed-db
+                                  [[:srp "resources/public/data/srp.csv"]
+                                   [:pdp "resources/public/data/pdp.csv"]]))))
   (stop [this] this))
 
 (defn make-system

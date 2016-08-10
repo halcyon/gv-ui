@@ -21,7 +21,7 @@
              (let [idents (get @state :all-items)]
                (swap! state (fn [s]
                               (-> s
-                                  (assoc-in [:lists/by-title "Initial List" :items] idents)
+                                  (assoc-in [:lists/by-title "Next Steps?" :items] idents)
                                   (dissoc :all-items))))))})
 
 
@@ -31,9 +31,29 @@
            ref]} ;; ident of component on which mutation is run
 
    dispatch-key ;; 'app/choose-tab
-   {:keys [tab] :as params}]
+   {:keys [tab content] :as params}]
 
-  {:action (fn [] (swap! state assoc-in [:tabs 0] tab))})
+  {:action (fn [] (swap! state
+                         #(let [st %]
+                            (js/console.log "tabsw. params" params)
+                            (js/console.log "tabsw. state:" st)
+                            (cond-> st
+
+                              ;; always change tab
+                              true (assoc-in [:tabs 0] tab)
+
+
+                              ;; janky routing
+                              true (assoc-in [:tabs 1] (if content content 1))
+
+
+                              ;; TODO - generalize --------,-,--,        ;; JANK workaround for not having SRP tab initialized on initial app load
+                              ;; (some? content)
+                              ;; (update-in [tab content] merge {:type :sunburst-tab
+                              ;;                                 :content content
+                              ;;                                 :id content
+                              ;;                                 :new-shiny (om/tempid)})
+                              ))))})
 
 
 (defmethod m/mutate 'd3/add-square [{:keys [state ref]} k params]
@@ -62,11 +82,13 @@
                                     (update :square/by-id dissoc id)
                                     (update-in squares-path (partial into [] (remove (comp #{id} second))))))))))})
 
-(defmethod m/mutate 'fetch/data-loaded [{:keys [state]} _ _]
+(defmethod m/mutate 'fetch/initial-load [{:keys [state]} _ _]
   {:action (fn []
-             (let [idents (get @state :all-tables)]
+             (let [tbl-idents (get @state :all-tables)
+                   viz-idents (get @state :all-viz)]
                (swap! state
                       (fn [s]
                         (-> s
-                            (assoc-in [:data-tab 1 :contents] idents)
-                            (dissoc :all-tables))))))})
+                            (assoc-in [:data-tab 1 :content] tbl-idents)
+                            (assoc-in [:data-viz-tab 1 :content] viz-idents)
+                            (dissoc :all-tables :all-viz))))))})

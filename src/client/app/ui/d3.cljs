@@ -93,4 +93,4 @@
                      (dom/button #js {:onClick #(om/transact! this '[(d3/rem-square {:id :all})])} "Clear")
                      (d3-ui-component data)
                      (dom/pre nil (with-out-str (pp/print-table (:squares data))))))))
-(def ui-tab (om/factory D3Tab (juxt :type :id)))
+(def ui-tab (om/factory D3Tab {:keyfn (juxt :type :id)}))

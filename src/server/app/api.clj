@@ -25,14 +25,13 @@
 
 (defmethod api-read :all-tables [{:keys [db] :as env} dispatch-key params]
   (let [res (vals @(:tables db))]
-    ;; (timbre/info ":all-tables" res)
     {:value (into [] (vals @(:tables db)))}))
 
-;; (in-ns 'untangled.server.impl.components.handler)
-;; (defn valid-response?
-;;   [result]
-;;   (timbre/info "valid-response? arg: " result)
-;;   (and
-;;     (not (instance? Exception result))
-;;     (not (some (fn [[_ {:keys [om.next/error]}]] (some? error)) result))))
-;; (in-ns 'app.api)
+(defmethod api-read :all-viz [{:keys [db] :as env} dispatch-key params]
+  (let [res (vals @(:tables db))]
+    {:value (into []
+                  (map (fn [{:keys [id rows]}]
+                         {:id id
+                          :type :sunburst
+                          :data rows}))
+                  (vals @(:tables db)))}))

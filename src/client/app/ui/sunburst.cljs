@@ -3,9 +3,7 @@
             [om.dom :as dom]
             [om.next :as om :refer-macros [defui]]
             [untangled.client.core :as uc]
-            [untangled.client.mutations :as m]
-            [app.ui.data-nav :refer [ui-data-series]]
-            [cljs.pprint :as pp]))
+            [untangled.client.mutations :as m]))
 
 (def sunburst-dim {:width 790 :height 600})
 
@@ -80,7 +78,9 @@
 
 (defui ^:once Path
   static uc/InitialAppState
-  (initial-state [clz params] (merge {:path ["home" "srp" "pdp" "end"] :visits 200} params))
+  (initial-state [clz params]
+                 (merge {:path ["home" "srp" "pdp" "end"] :visits 200}
+                        params))
   static om/Ident
   (ident [this props] [:path/by-id (:path props)])
   static om/IQuery
@@ -88,10 +88,13 @@
 
 (defui ^:once Sunburst
   static uc/InitialAppState
-  (initial-state [clz params] {:paths [(uc/initial-state Path {})
-                                       (uc/initial-state Path {:path ["home" "srp" "end"] :visits 140})
-                                       (uc/initial-state Path {:path ["srp" "pdp" "end"] :visits 120})
-                                       (uc/initial-state Path {:path ["srp" "end"] :visits 240})]})
+  (initial-state
+   [clz params]
+   {:paths
+    [(uc/initial-state Path {})
+     (uc/initial-state Path {:path ["home" "srp" "end"] :visits 140})
+     (uc/initial-state Path {:path ["srp" "pdp" "end"] :visits 120})
+     (uc/initial-state Path {:path ["srp" "end"] :visits 240})]})
   static om/IQuery
   (query [this] [{:paths (om/get-query Path)}])
   Object
@@ -107,16 +110,48 @@
 (def ui-sunburst (om/factory Sunburst))
 
 
+(defn tag->filename
+  [t]
+  (case t
+    :srp "/data/srp.csv"
+    :pdp "/data/pdp.csv"
+    "/data/pdp.csv"))
+
 (defui ^:once SunburstTab
   static uc/InitialAppState
-  (initial-state [clz params] {:id 1 :type :sunburst-tab :data (uc/initial-state Sunburst {})})
+  (initial-state [clz params] {:id :pdp
+                               :type :sunburst-tab
+                               :data [] #_(uc/initial-state Sunburst {})
+                               :content :pdp})
   static om/Ident
   (ident [this {id :id :as props}] [:sunburst-tab id])
   static om/IQuery
-  (query [this] [:id :type {:data (om/get-query Sunburst)}])
+  (query [this] [:id :type :content {:data (om/get-query Sunburst)}])
 
   Object
-  (componentDidMount [this] (js/makeItSo)) ;; works only if `sequences.js` loaded prior to `app.js`
+
+  (componentWillUnmount
+   [this]
+   (js/console.log "will un-mount"))
+
+  (componentWillReceiveProps
+   [this next-props]
+   (js/console.log "will recv. props" next-props)
+   (let [curr-props (om/props this)
+         {:keys [content]} next-props])
+   this)
+
+  (componentWillUpdate
+   [this next-props next-state]
+   (js/console.log "will update" next-props next-state)
+   this)
+
+  (componentDidMount  ;; works only if `sequences.js` loaded prior to `app.js`
+   [this]
+   (js/console.log "Make it so")
+   (js/console.log "with props: " (om/props this))
+   (js/makeItSo (tag->filename (:content (om/props this)))))
+
   (render [this]
           (let [{:keys [data]} (om/props this)]
             (dom/div #js {:id "sunburst-tab"}
@@ -128,9 +163,10 @@
                                                 (dom/span #js {:id "percentage"})
                                                 (dom/br nil)
                                                 "of visits begin with this sequence of pages")
-                                       #_(ui-sunburst data)))
+                                       ;; (ui-sunburst data)
+                                       ))
 
                      ;; Sunburst legend
                      (dom/div #js {:id "sidebar"}
                               (dom/div #js {:id "legend"}))))))
-(def ui-tab (om/factory SunburstTab (juxt :type :id)))
+(def ui-tab (om/factory SunburstTab {:keyfn (juxt :type :id)}))
