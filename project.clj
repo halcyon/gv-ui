@@ -16,8 +16,7 @@
                  [com.taoensso/timbre "4.6.0" :exclusions [io.aviso/pretty]]
                  [commons-codec "1.10"]
                  [binaryage/devtools "0.7.2" :scope "test"]
-                 ;; [cljsjs/d3 "3.5.16-0"]
-                 [cljsjs/d3 "3.5.7-1"]
+                 [cljsjs/d3 "3.5.16-0"]
                  [com.cemerick/url "0.1.1"]
                  [clj-http "3.1.0"]
                  [cheshire "5.6.3"]
@@ -66,10 +65,14 @@
 
                {:id           "production"
                 :jar true
-                :source-paths ["src/client"]
-                :compiler     {:output-to       "resources/public/js/compiled/app.js"
-                               :output-dir      "resources/public/js/compiled/production"
-                               :pretty-print    false
+                :source-paths ["src/client" "prod/client"]
+                :compiler     {;; We dont use these b/c we're compiling with `:advanced` optimizations
+                               ;; :main            app.start
+                               ;; :asset-path      "js/compiled/production"
+                               ;; :output-dir      "resources/public/js/compiled/production"
+                               :output-to       "resources/public/js/compiled/app.js"
+                               :pretty-print true
+                               :pseudo-names true
                                :verbose         true
                                :closure-defines {goog.DEBUG false}
                                :elide-asserts   true

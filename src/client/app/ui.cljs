@@ -24,6 +24,7 @@
   (render [this]
           (let [props (om/props this)]
             (js/console.log "TabManager switching tab, provided props: " props)
+            (js/console.log "(:type props) " (:type props))
             (case (:type props)
               :todo-tab     (todo/ui-tab props)
               :data-tab     (data-nav/ui-tab props)
@@ -58,7 +59,6 @@
                                #js {:className "nav-button"
                                     :onClick   #(om/transact!
                                                  this '[(app/choose-tab {:tab :sunburst-tab :content :pdp})])} "PDP")
-
 
                               (dom/button
                                #js {:className "nav-button"

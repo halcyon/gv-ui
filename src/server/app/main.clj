@@ -4,9 +4,11 @@
   run :gen-class while in development, which sometimes results in class
   loader issues."
   (:gen-class)
-  (:require [com.stuartsierra.component :as c]
+  (:require [taoensso.timbre :as timbre]
+            [com.stuartsierra.component :as c]
             [app.system :refer [make-system]]))
 
 (defn -main
   [& _]
+  (timbre/info "Starting system with properties: " (pr-str (System/getProperties)))
   (c/start (make-system)))
