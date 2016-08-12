@@ -63,22 +63,22 @@
                                :optimizations        :none}}
 
 
-               {:id           "production"
-                :jar true
+               {:jar true
+                :id           "production"
                 :source-paths ["src/client" "prod/client"]
                 :compiler     {;; We dont use these b/c we're compiling with `:advanced` optimizations
                                ;; :main            app.start
                                ;; :asset-path      "js/compiled/production"
                                ;; :output-dir      "resources/public/js/compiled/production"
-                               :output-to       "resources/public/js/compiled/app.js"
+                               :output-to "resources/public/js/compiled/app.js"
                                :pretty-print true
                                :pseudo-names true
                                :verbose         true
                                :closure-defines {goog.DEBUG false}
                                :elide-asserts   true
                                :optimizations   :advanced
+                               ;; :externs ["cljsjs/d3/common/d3.ext.js"]
                                :foreign-libs [{:provides ["cljsjs.d3"]
-                                               :externs ["cljsjs/d3/common/d3.ext.js"]
                                                :file "cljsjs/d3/development/d3.inc.js"
                                                :file-min "cljsjs/d3/production/d3.min.inc.js"}]}}]}
 
