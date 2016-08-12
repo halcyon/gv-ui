@@ -9,7 +9,7 @@
             [untangled.client.core :as uc]
             [untangled.client.mutations :as m]))
 
- (defui ^:once TabManager
+(defui ^:once TabManager
   static uc/InitialAppState
   (initial-state [clz params] (uc/initial-state SRPTab {}))
   static om/Ident
@@ -23,8 +23,6 @@
   Object
   (render [this]
           (let [props (om/props this)]
-            (js/console.log "TabManager switching tab, provided props: " props)
-            (js/console.log "(:type props) " (:type props))
             (case (:type props)
               :todo-tab     (todo/ui-tab props)
               :data-tab     (data-nav/ui-tab props)
@@ -49,8 +47,8 @@
                      ;; navigation buttons
                      (dom/div #js {:id "tab-header"}
                               (dom/div #js {:id "header-title"}
-                                      (cond-> "Mobile-AG Sequence Data"
-                                        loading-data (str " (Loading data...)")))
+                                       (cond-> "Mobile-AG Sequence Data"
+                                         loading-data (str " (Loading data...)")))
                               (dom/button
                                #js {:className "nav-button"
                                     :onClick   #(om/transact!

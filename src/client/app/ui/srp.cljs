@@ -21,11 +21,11 @@
 
   (componentWillUnmount
    [this]
-   (js/console.log "will un-mount"))
+   (js/console.log "SRP will un-mount"))
 
   (componentWillReceiveProps
    [this next-props]
-   (js/console.log "will recv. props" next-props)
+   (js/console.log "SRP will recv. props" next-props)
    (let [curr-props (om/props this)
          {:keys [content]} next-props])
    this)
@@ -37,7 +37,7 @@
 
   (componentDidMount  ;; works only if `sequences.js` loaded prior to `app.js`
    [this]
-   (js/console.log "Make it so")
+   (js/console.log "SRP Make it so")
    (js/console.log "with props: " (om/props this))
    (js/makeItSo "/data/srp.csv"))
 
