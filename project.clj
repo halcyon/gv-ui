@@ -15,7 +15,6 @@
                  [navis/untangled-spec "0.3.8" :exclusions [bidi prismatic/schema]]
                  [com.taoensso/timbre "4.6.0" :exclusions [io.aviso/pretty]]
                  [commons-codec "1.10"]
-                 [binaryage/devtools "0.7.2" :scope "test"]
                  [cljsjs/d3 "3.5.16-0"]
                  [com.cemerick/url "0.1.1"]
                  [clj-http "3.1.0"]
@@ -31,7 +30,8 @@
   :clean-targets ^{:protect false} ["resources/public/js" "target"]
 
   :profiles {:dev {:source-paths ["dev/server"]
-                   :dependencies [[figwheel-sidecar "0.5.4-7" :exclusions [commons-io]]
+                   :dependencies [[binaryage/devtools "0.8.1" :scope "test"]
+                                  [figwheel-sidecar "0.5.4-7" :exclusions [commons-io]]
                                   [com.cemerick/piggieback "0.2.1"]]}
              :uberjar {:aot :all
                        :main app.main

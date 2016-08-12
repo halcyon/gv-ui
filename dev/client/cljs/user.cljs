@@ -10,7 +10,7 @@
 (enable-console-print!)
 
 ; Use Chrome...these enable proper formatting of cljs data structures!
-(devtools/install! [:custom-formatters :sanity-hints])
+(devtools/install! [:formatters :hints])
 
 (def log-app-state (partial util/log-app-state app))
 
