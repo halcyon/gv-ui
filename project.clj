@@ -6,7 +6,7 @@
 
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.89"]
-                 [org.omcljs/om "1.0.0-alpha40"]
+                 [org.omcljs/om "1.0.0-alpha41"]
                  [navis/untangled-client "0.5.4"
                   :exclusions [cljsjs/react
                                org.omcljs/om
